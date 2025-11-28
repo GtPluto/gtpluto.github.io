@@ -14,7 +14,7 @@ const posts = (await getCollection('notes', ({ id }) => id.startsWith('en/')))
 	<section>
 		<h1>{t('nav.notes')}</h1>
 		<p class="intro-text">
-			A digital garden of my technical learnings, snippets, and references.
+			{t('notes.intro')}
 		</p>
 		<div class="notes-grid">
 			{posts.map((post) => (

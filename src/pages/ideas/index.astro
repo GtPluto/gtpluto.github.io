@@ -14,7 +14,7 @@ const posts = (await getCollection('ideas', ({ id }) => id.startsWith('en/')))
 	<section>
 		<h1>{t('nav.ideas')}</h1>
 		<p class="intro-text">
-			A collection of thoughts, essays, and musings on various topics including startups, philosophy, and psychology.
+			{t('ideas.intro')}
 		</p>
 		<div class="post-list">
 			{posts.map((post) => (

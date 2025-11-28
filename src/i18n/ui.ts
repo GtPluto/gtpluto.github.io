@@ -20,6 +20,8 @@ export const ui = {
         'home.recentIdeas': 'Recent Ideas',
         'home.recentNotes': 'Recent Notes',
         'home.viewAll': 'View all',
+        'ideas.intro': 'A collection of thoughts, essays, and musings on various topics including startups, philosophy, and psychology.',
+        'notes.intro': 'A digital garden of my technical learnings, snippets, and references.',
         'footer.rights': 'ZhouHD. All rights reserved.',
     },
     zh: {
@@ -27,7 +29,7 @@ export const ui = {
         'nav.ideas': '想法',
         'nav.notes': '笔记',
         'nav.projects': '项目',
-        'nav.about': '关于',
+        'nav.about': '关于我',
         'home.intro': '你好，我是 ZhouHD。',
         'home.subtitle': '软件工程师 & 终身学习者。',
         'home.welcome': '欢迎来到我的数字花园。在这里，我分享关于创业、哲学和心理学的思考，以及我的专业学习笔记。',
@@ -36,6 +38,8 @@ export const ui = {
         'home.recentIdeas': '近期想法',
         'home.recentNotes': '近期笔记',
         'home.viewAll': '查看全部',
+        'ideas.intro': '关于创业、哲学和心理学等各种话题的思考、随笔和感悟。',
+        'notes.intro': '我的技术学习、代码片段和参考资料的数字花园。',
         'footer.rights': 'ZhouHD. 保留所有权利。',
     },
 } as const;

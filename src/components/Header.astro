@@ -17,15 +17,26 @@ const currentPath = Astro.url.pathname.replace(`/${lang}`, '') || '/';
 				<a href={getRelativeLocaleUrl(lang, '/projects')}>{t('nav.projects')}</a>
 				<a href={getRelativeLocaleUrl(lang, '/about')}>{t('nav.about')}</a>
 			</div>
-			<div class="lang-switch">
-				{Object.entries(languages).map(([l, label]) => (
-					<a 
-						href={getRelativeLocaleUrl(l, currentPath)} 
-						class={l === lang ? 'active' : ''}
-					>
-						{label}
-					</a>
-				))}
+			<div class="lang-switch-wrapper">
+				<details class="lang-switch">
+					<summary aria-label="Select Language">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="globe-icon">
+							<circle cx="12" cy="12" r="10"></circle>
+							<line x1="2" y1="12" x2="22" y2="12"></line>
+							<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+						</svg>
+					</summary>
+					<div class="dropdown-menu">
+						{Object.entries(languages).map(([l, label]) => (
+							<a 
+								href={getRelativeLocaleUrl(l, currentPath)} 
+								class={l === lang ? 'active' : ''}
+							>
+								{label}
+							</a>
+						))}
+					</div>
+				</details>
 			</div>
 		</nav>
 	</div>
@@ -73,22 +84,67 @@ const currentPath = Astro.url.pathname.replace(`/${lang}`, '') || '/';
 		text-decoration: none;
 	}
 
-	.lang-switch {
+	.lang-switch-wrapper {
+		margin-left: auto;
+		position: relative;
+	}
+
+	.lang-switch summary {
+		list-style: none;
+		cursor: pointer;
 		display: flex;
-		gap: 0.5rem;
-		margin-left: auto; /* Push to the right if needed, though justify-between handles it */
-	}
-
-	.lang-switch a {
-		font-size: 0.9rem;
+		align-items: center;
 		color: var(--color-text);
-		opacity: 0.6;
-		text-decoration: none;
+		opacity: 0.8;
+		transition: opacity 0.2s, color 0.2s;
 	}
 
-	.lang-switch a:hover, .lang-switch a.active {
+	.lang-switch summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.lang-switch summary:hover {
 		opacity: 1;
 		color: var(--color-accent);
 	}
+
+	.dropdown-menu {
+		position: absolute;
+		top: 100%;
+		right: 0;
+		margin-top: 0.5rem;
+		background-color: var(--color-bg);
+		border: 1px solid var(--color-border);
+		border-radius: 8px;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+		padding: 0.5rem;
+		min-width: 120px;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.dropdown-menu a {
+		display: block;
+		padding: 0.5rem 1rem;
+		color: var(--color-text);
+		text-decoration: none;
+		border-radius: 4px;
+		font-size: 0.9rem;
+	}
+
+	.dropdown-menu a:hover {
+		background-color: var(--color-bg-code);
+		color: var(--color-accent);
+	}
+
+	.dropdown-menu a.active {
+		font-weight: bold;
+		color: var(--color-accent);
+		background-color: var(--color-bg-code);
+	}
+	
+	/* Close dropdown when clicking outside is handled natively by details/summary behavior in some browsers, 
+	   but for better UX we might want a script. For now, this is a pure CSS/HTML solution. */
 </style>
 
