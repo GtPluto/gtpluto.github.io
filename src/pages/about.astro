@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const aboutPosts = await getCollection('about');
+---
+
+<BaseLayout title="About Me | ZhouHD">
+	<section class="about-intro">
+		<h1>About Me</h1>
+		<div class="bio">
+			<p>
+				Hi, I'm ZhouHD. I'm a software engineer based in [Location]. 
+				I'm passionate about building software that solves real problems and exploring the intersection of technology and humanities.
+			</p>
+			<p>
+				When I'm not coding, I'm reading philosophy, thinking about startup ideas, or learning something new.
+			</p>
+		</div>
+	</section>
+
+	<section class="more-about">
+		<h2>More About Me</h2>
+		<div class="grid">
+			{aboutPosts.map((post) => (
+				<a href={`/about/${post.slug}`} class="card">
+					<h3>{post.data.title}</h3>
+					<p>{post.data.description}</p>
+				</a>
+			))}
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.about-intro {
+		margin-bottom: 4rem;
+	}
+
+	.bio {
+		font-size: 1.1rem;
+		line-height: 1.8;
+		max-width: 700px;
+	}
+
+	.bio p {
+		margin-bottom: 1.5rem;
+	}
+
+	.more-about h2 {
+		margin-bottom: 2rem;
+		border-bottom: 1px solid var(--color-border);
+		padding-bottom: 0.5rem;
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 2rem;
+	}
+
+	.card {
+		display: block;
+		padding: 1.5rem;
+		border: 1px solid var(--color-border);
+		border-radius: 8px;
+		color: var(--color-text);
+		text-decoration: none;
+		transition: transform 0.2s, border-color 0.2s;
+	}
+
+	.card:hover {
+		transform: translateY(-2px);
+		border-color: var(--color-accent);
+	}
+
+	.card h3 {
+		color: var(--color-accent);
+		margin-bottom: 0.5rem;
+	}
+
+	.card p {
+		margin: 0;
+		opacity: 0.9;
+	}
+</style>
