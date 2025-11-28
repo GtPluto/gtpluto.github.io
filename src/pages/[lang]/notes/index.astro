@@ -1,12 +1,17 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { useTranslations } from '../../i18n/utils';
+import { useTranslations } from '../../../i18n/utils';
+import { languages } from '../../../i18n/ui';
 
-const lang = 'en';
-const t = useTranslations(lang);
+export async function getStaticPaths() {
+	return Object.keys(languages).filter(lang => lang !== 'en').map(lang => ({ params: { lang } }));
+}
 
-const posts = (await getCollection('notes', ({ id }) => id.startsWith('en/')))
+const { lang } = Astro.params;
+const t = useTranslations(lang as any);
+
+const posts = (await getCollection('notes', ({ id }) => id.startsWith(`${lang}/`)))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
@@ -18,11 +23,11 @@ const posts = (await getCollection('notes', ({ id }) => id.startsWith('en/')))
 		</p>
 		<div class="notes-grid">
 			{posts.map((post) => (
-				<a href={`/notes/${post.slug.split('/').slice(1).join('/')}`} class="note-card">
+				<a href={`/${lang}/notes/${post.slug.split('/').slice(1).join('/')}`} class="note-card">
 					<div class="note-header">
 						<h2>{post.data.title}</h2>
 						<span class="date">
-							{post.data.pubDate.toLocaleDateString('en-us', {
+							{post.data.pubDate.toLocaleDateString(lang === 'zh' ? 'zh-CN' : 'en-us', {
 								year: 'numeric',
 								month: 'short',
 								day: 'numeric',

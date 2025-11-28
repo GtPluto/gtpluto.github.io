@@ -1,15 +1,31 @@
 ---
+import { getLangFromUrl, useTranslations, getRelativeLocaleUrl } from '../i18n/utils';
+import { languages } from '../i18n/ui';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const currentPath = Astro.url.pathname.replace(`/${lang}`, '') || '/';
 ---
 
 <header class="site-header">
 	<div class="container">
 		<nav>
-			<a href="/" class="logo">ZhouHD</a>
+			<a href={getRelativeLocaleUrl(lang, '/')} class="logo">ZhouHD</a>
 			<div class="nav-links">
-				<a href="/ideas">Ideas</a>
-				<a href="/notes">Notes</a>
-				<a href="/projects">Projects</a>
-				<a href="/about">About</a>
+				<a href={getRelativeLocaleUrl(lang, '/ideas')}>{t('nav.ideas')}</a>
+				<a href={getRelativeLocaleUrl(lang, '/notes')}>{t('nav.notes')}</a>
+				<a href={getRelativeLocaleUrl(lang, '/projects')}>{t('nav.projects')}</a>
+				<a href={getRelativeLocaleUrl(lang, '/about')}>{t('nav.about')}</a>
+			</div>
+			<div class="lang-switch">
+				{Object.entries(languages).map(([l, label]) => (
+					<a 
+						href={getRelativeLocaleUrl(l, currentPath)} 
+						class={l === lang ? 'active' : ''}
+					>
+						{label}
+					</a>
+				))}
 			</div>
 		</nav>
 	</div>
@@ -31,6 +47,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		gap: 2rem;
 	}
 
 	.logo {
@@ -55,4 +72,23 @@
 		color: var(--color-accent);
 		text-decoration: none;
 	}
+
+	.lang-switch {
+		display: flex;
+		gap: 0.5rem;
+		margin-left: auto; /* Push to the right if needed, though justify-between handles it */
+	}
+
+	.lang-switch a {
+		font-size: 0.9rem;
+		color: var(--color-text);
+		opacity: 0.6;
+		text-decoration: none;
+	}
+
+	.lang-switch a:hover, .lang-switch a.active {
+		opacity: 1;
+		color: var(--color-accent);
+	}
 </style>
+

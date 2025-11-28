@@ -1,12 +1,17 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { useTranslations } from '../../i18n/utils';
+import { useTranslations } from '../../../i18n/utils';
+import { languages } from '../../../i18n/ui';
 
-const lang = 'en';
-const t = useTranslations(lang);
+export async function getStaticPaths() {
+	return Object.keys(languages).filter(lang => lang !== 'en').map(lang => ({ params: { lang } }));
+}
 
-const posts = (await getCollection('ideas', ({ id }) => id.startsWith('en/')))
+const { lang } = Astro.params;
+const t = useTranslations(lang as any);
+
+const posts = (await getCollection('ideas', ({ id }) => id.startsWith(`${lang}/`)))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
@@ -19,11 +24,11 @@ const posts = (await getCollection('ideas', ({ id }) => id.startsWith('en/')))
 		<div class="post-list">
 			{posts.map((post) => (
 				<article class="post-item">
-					<a href={`/ideas/${post.slug.split('/').slice(1).join('/')}`}>
+					<a href={`/${lang}/ideas/${post.slug.split('/').slice(1).join('/')}`}>
 						<h2>{post.data.title}</h2>
 						<div class="meta">
 							<time datetime={post.data.pubDate.toISOString()}>
-								{post.data.pubDate.toLocaleDateString('en-us', {
+								{post.data.pubDate.toLocaleDateString(lang === 'zh' ? 'zh-CN' : 'en-us', {
 									year: 'numeric',
 									month: 'short',
 									day: 'numeric',

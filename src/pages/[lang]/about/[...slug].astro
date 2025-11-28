@@ -1,13 +1,25 @@
 ---
 import { type CollectionEntry, getCollection } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { languages } from '../../../i18n/ui';
 
 export async function getStaticPaths() {
-	const posts = await getCollection('about', ({ id }) => id.startsWith('en/'));
-	return posts.map((post) => ({
-		params: { slug: post.slug.split('/').slice(1).join('/') },
-		props: post,
-	}));
+	const posts = await getCollection('about');
+	const paths = [];
+	
+	// Filter for non-English posts
+	const nonEnPosts = posts.filter(post => !post.slug.startsWith('en/'));
+
+	for (const post of nonEnPosts) {
+		const [lang, ...slugParts] = post.slug.split('/');
+		if (lang in languages && lang !== 'en') {
+			paths.push({
+				params: { lang, slug: slugParts.join('/') },
+				props: post,
+			});
+		}
+	}
+	return paths;
 }
 type Props = CollectionEntry<'about'>;
 
@@ -25,7 +37,7 @@ const { Content } = await post.render();
 			<Content />
 		</div>
 		<div class="back">
-			<a href="/about">&larr; Back to About</a>
+			<a href={`/${Astro.params.lang}/about`}>&larr; 返回关于我</a>
 		</div>
 	</article>
 </BaseLayout>

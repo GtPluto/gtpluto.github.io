@@ -1,24 +1,29 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { useTranslations } from '../i18n/utils';
+import { useTranslations } from '../../../i18n/utils';
+import { languages } from '../../../i18n/ui';
 
-const lang = 'en';
-const t = useTranslations(lang);
+export async function getStaticPaths() {
+	return Object.keys(languages).filter(lang => lang !== 'en').map(lang => ({ params: { lang } }));
+}
 
-const aboutPosts = await getCollection('about', ({ id }) => id.startsWith('en/'));
+const { lang } = Astro.params;
+const t = useTranslations(lang as any);
+
+const aboutPosts = await getCollection('about', ({ id }) => id.startsWith(`${lang}/`));
 ---
 
-<BaseLayout title="About Me | ZhouHD">
+<BaseLayout title={`关于我 | ZhouHD`}>
 	<section class="about-intro">
 		<h1>{t('nav.about')}</h1>
 		<div class="bio">
 			<p>
-				Hi, I'm ZhouHD. I'm a software engineer based in [Location]. 
-				I'm passionate about building software that solves real problems and exploring the intersection of technology and humanities.
+				你好，我是 ZhouHD。我是一名软件工程师。
+				我热衷于构建解决实际问题的软件，并探索技术与人文的交汇点。
 			</p>
 			<p>
-				When I'm not coding, I'm reading philosophy, thinking about startup ideas, or learning something new.
+				当我不写代码时，我会阅读哲学书籍，思考创业点子，或者学习新东西。
 			</p>
 		</div>
 	</section>
@@ -27,7 +32,7 @@ const aboutPosts = await getCollection('about', ({ id }) => id.startsWith('en/')
 		<h2>{t('home.moreAbout')}</h2>
 		<div class="grid">
 			{aboutPosts.map((post) => (
-				<a href={`/about/${post.slug.split('/').slice(1).join('/')}`} class="card">
+				<a href={`/${lang}/about/${post.slug.split('/').slice(1).join('/')}`} class="card">
 					<h3>{post.data.title}</h3>
 					<p>{post.data.description}</p>
 				</a>

@@ -1,15 +1,14 @@
 ---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 const today = new Date();
 ---
 
 <footer>
 	<div class="container">
-		<p>&copy; {today.getFullYear()} ZhouHD. All rights reserved.</p>
-		<div class="social-links">
-			<a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
-			<a href="https://twitter.com" target="_blank" rel="noopener noreferrer">Twitter</a>
-			<a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-		</div>
+		<p>&copy; {today.getFullYear()} {t('footer.rights')}</p>
 	</div>
 </footer>
 
@@ -24,22 +23,10 @@ const today = new Date();
 
 	.container {
 		display: flex;
-		justify-content: space-between;
+		justify-content: center; /* Center the copyright since links are gone */
 		align-items: center;
 		flex-wrap: wrap;
 		gap: 1rem;
 	}
 
-	.social-links {
-		display: flex;
-		gap: 1rem;
-	}
-
-	.social-links a {
-		color: var(--color-text);
-	}
-
-	.social-links a:hover {
-		color: var(--color-accent);
-	}
 </style>

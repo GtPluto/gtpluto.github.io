@@ -1,20 +1,25 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { useTranslations } from '../i18n/utils';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { useTranslations } from '../../i18n/utils';
+import { languages } from '../../i18n/ui';
 
-const lang = 'en';
-const t = useTranslations(lang);
+export async function getStaticPaths() {
+	return Object.keys(languages).filter(lang => lang !== 'en').map(lang => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const t = useTranslations(lang as any);
 
 const projects = [
 	{
-		title: "Personal Website",
-		description: "This website! Built with Astro and Vanilla CSS.",
+		title: "个人网站",
+		description: "这个网站！使用 Astro 和 Vanilla CSS 构建。",
 		link: "#",
 		tags: ["Astro", "CSS", "SSG"]
 	},
 	{
 		title: "Barcode Wallet App",
-		description: "An iOS app to manage gym passes and barcodes.",
+		description: "一个用于管理健身房通行证和条形码的 iOS 应用。",
 		link: "#",
 		tags: ["iOS", "Swift", "SwiftUI"]
 	},
@@ -22,11 +27,11 @@ const projects = [
 ];
 ---
 
-<BaseLayout title="Projects | ZhouHD" description="Showcase of my personal and professional projects.">
+<BaseLayout title="项目 | ZhouHD" description="我的个人和专业项目展示。">
 	<section>
 		<h1>{t('nav.projects')}</h1>
 		<p class="intro-text">
-			A selection of things I've built.
+			我构建的一些东西。
 		</p>
 		<div class="projects-grid">
 			{projects.map((project) => (
@@ -36,7 +41,7 @@ const projects = [
 					<div class="tags">
 						{project.tags.map(tag => <span class="tag">{tag}</span>)}
 					</div>
-					<a href={project.link} class="link">View Project &rarr;</a>
+					<a href={project.link} class="link">查看项目 &rarr;</a>
 				</article>
 			))}
 		</div>

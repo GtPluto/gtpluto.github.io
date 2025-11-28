@@ -1,13 +1,25 @@
 ---
 import { type CollectionEntry, getCollection } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { languages } from '../../../i18n/ui';
 
 export async function getStaticPaths() {
-	const posts = await getCollection('notes', ({ id }) => id.startsWith('en/'));
-	return posts.map((post) => ({
-		params: { slug: post.slug.split('/').slice(1).join('/') },
-		props: post,
-	}));
+	const posts = await getCollection('notes');
+	const paths = [];
+	
+	// Filter for non-English posts
+	const nonEnPosts = posts.filter(post => !post.slug.startsWith('en/'));
+
+	for (const post of nonEnPosts) {
+		const [lang, ...slugParts] = post.slug.split('/');
+		if (lang in languages && lang !== 'en') {
+			paths.push({
+				params: { lang, slug: slugParts.join('/') },
+				props: post,
+			});
+		}
+	}
+	return paths;
 }
 type Props = CollectionEntry<'notes'>;
 
@@ -20,7 +32,7 @@ const { Content } = await post.render();
 		<aside class="toc-sidebar">
 			<!-- Future: Table of Contents -->
 			<div class="sticky-content">
-				<a href="/notes" class="back-link">&larr; Back to Notes</a>
+				<a href={`/${Astro.params.lang}/notes`} class="back-link">&larr; Back to Notes</a>
 			</div>
 		</aside>
 		
@@ -29,7 +41,7 @@ const { Content } = await post.render();
 				<h1>{post.data.title}</h1>
 				<div class="meta">
 					<time datetime={post.data.pubDate.toISOString()}>
-						Last updated: {post.data.pubDate.toLocaleDateString()}
+						Last updated: {post.data.pubDate.toLocaleDateString('zh-CN')}
 					</time>
 				</div>
 				{post.data.tags && (

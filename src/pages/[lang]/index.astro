@@ -1,16 +1,21 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { useTranslations } from '../i18n/utils';
+import { useTranslations } from '../../i18n/utils';
+import { languages } from '../../i18n/ui';
 
-const lang = 'en';
-const t = useTranslations(lang);
+export async function getStaticPaths() {
+	return Object.keys(languages).filter(lang => lang !== 'en').map(lang => ({ params: { lang } }));
+}
 
-const ideas = (await getCollection('ideas', ({ id }) => id.startsWith('en/')))
+const { lang } = Astro.params;
+const t = useTranslations(lang as any);
+
+const ideas = (await getCollection('ideas', ({ id }) => id.startsWith(`${lang}/`)))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
 
-const notes = (await getCollection('notes', ({ id }) => id.startsWith('en/')))
+const notes = (await getCollection('notes', ({ id }) => id.startsWith(`${lang}/`)))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
 ---
@@ -23,19 +28,19 @@ const notes = (await getCollection('notes', ({ id }) => id.startsWith('en/')))
 			{t('home.welcome')}
 		</p>
 		<div class="cta-buttons">
-			<a href="/about" class="button primary">{t('home.moreAbout')}</a>
-			<a href="/projects" class="button secondary">{t('home.myProjects')}</a>
+			<a href={`/${lang}/about`} class="button primary">{t('home.moreAbout')}</a>
+			<a href={`/${lang}/projects`} class="button secondary">{t('home.myProjects')}</a>
 		</div>
 	</section>
 
 	<section class="featured">
 		<div class="section-header">
 			<h2>{t('home.recentIdeas')}</h2>
-			<a href="/ideas">{t('home.viewAll')} &rarr;</a>
+			<a href={`/${lang}/ideas`}>{t('home.viewAll')} &rarr;</a>
 		</div>
 		<div class="grid">
 			{ideas.map((post) => (
-				<a href={`/ideas/${post.slug.split('/').slice(1).join('/')}`} class="card">
+				<a href={`/${lang}/ideas/${post.slug.split('/').slice(1).join('/')}`} class="card">
 					<h3>{post.data.title}</h3>
 					<p>{post.data.description}</p>
 					<span class="date">{post.data.pubDate.toLocaleDateString()}</span>
@@ -47,11 +52,11 @@ const notes = (await getCollection('notes', ({ id }) => id.startsWith('en/')))
 	<section class="featured">
 		<div class="section-header">
 			<h2>{t('home.recentNotes')}</h2>
-			<a href="/notes">{t('home.viewAll')} &rarr;</a>
+			<a href={`/${lang}/notes`}>{t('home.viewAll')} &rarr;</a>
 		</div>
 		<div class="grid">
 			{notes.map((post) => (
-				<a href={`/notes/${post.slug.split('/').slice(1).join('/')}`} class="card">
+				<a href={`/${lang}/notes/${post.slug.split('/').slice(1).join('/')}`} class="card">
 					<h3>{post.data.title}</h3>
 					<p>{post.data.description}</p>
 					<span class="date">{post.data.pubDate.toLocaleDateString()}</span>
