@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { useTranslations } from '../../i18n/utils';
 import { languages } from '../../i18n/ui';
+import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
 	return Object.keys(languages).filter(lang => lang !== 'en').map(lang => ({ params: { lang } }));
@@ -10,24 +11,11 @@ export async function getStaticPaths() {
 const { lang } = Astro.params;
 const t = useTranslations(lang as any);
 
-const projects = [
-	{
-		title: "个人网站",
-		description: "这个网站！使用 Astro 和 Vanilla CSS 构建。",
-		link: "#",
-		tags: ["Astro", "CSS", "SSG"]
-	},
-	{
-		title: "Barcode Wallet App",
-		description: "一个用于管理健身房通行证和条形码的 iOS 应用。",
-		link: "#",
-		tags: ["iOS", "Swift", "SwiftUI"]
-	},
-	// Add more projects here
-];
+const projects = (await getCollection('projects', ({ id }) => id.startsWith(`${lang}/`)))
+	.sort((a, b) => (b.data.pubDate?.valueOf() || 0) - (a.data.pubDate?.valueOf() || 0));
 ---
 
-<BaseLayout title="项目 | ZhouHD" description="我的个人和专业项目展示。">
+<BaseLayout title={`${t('nav.projects')} | ZhouHD`} description="我的个人和专业项目展示。">
 	<section>
 		<h1>{t('nav.projects')}</h1>
 		<p class="intro-text">
@@ -36,12 +24,15 @@ const projects = [
 		<div class="projects-grid">
 			{projects.map((project) => (
 				<article class="project-card">
-					<h2>{project.title}</h2>
-					<p>{project.description}</p>
+					<h2>{project.data.title}</h2>
+					<p>{project.data.description}</p>
 					<div class="tags">
-						{project.tags.map(tag => <span class="tag">{tag}</span>)}
+						{project.data.tags && project.data.tags.map(tag => <span class="tag">{tag}</span>)}
 					</div>
-					<a href={project.link} class="link">查看项目 &rarr;</a>
+					<div class="links">
+						<a href={`/${lang}/projects/${project.slug.split('/').slice(1).join('/')}`} class="link">阅读文章 &rarr;</a>
+						{project.data.link && <a href={project.data.link} class="link external" target="_blank" rel="noopener noreferrer">查看项目 &rarr;</a>}
+					</div>
 				</article>
 			))}
 		</div>

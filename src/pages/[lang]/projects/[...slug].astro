@@ -1,0 +1,129 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { languages } from '../../../i18n/ui';
+
+export async function getStaticPaths() {
+	const projects = await getCollection('projects');
+	const paths = [];
+	
+	// Filter for non-English projects
+	const nonEnProjects = projects.filter(project => !project.slug.startsWith('en/'));
+
+	for (const project of nonEnProjects) {
+		const [lang, ...slugParts] = project.slug.split('/');
+		if (lang in languages && lang !== 'en') {
+			paths.push({
+				params: { lang, slug: slugParts.join('/') },
+				props: project,
+			});
+		}
+	}
+	return paths;
+}
+type Props = CollectionEntry<'projects'>;
+
+const project = Astro.props;
+const { Content } = await project.render();
+---
+
+<BaseLayout title={`${project.data.title} | ZhouHD`} description={project.data.description}>
+	<article class="project-article">
+		<header>
+			<h1>{project.data.title}</h1>
+			<p class="description">{project.data.description}</p>
+			<div class="meta">
+				{project.data.pubDate && (
+					<time datetime={project.data.pubDate.toISOString()}>
+						{project.data.pubDate.toLocaleDateString('zh-CN', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric',
+						})}
+					</time>
+				)}
+				{project.data.tags && (
+					<span class="tags">
+						{project.data.tags.map(tag => `#${tag}`).join(' ')}
+					</span>
+				)}
+			</div>
+			{project.data.link && (
+				<a href={project.data.link} class="project-link" target="_blank" rel="noopener noreferrer">
+					查看项目 &rarr;
+				</a>
+			)}
+		</header>
+		<div class="content">
+			<Content />
+		</div>
+		<div class="back">
+			<a href={`/${Astro.params.lang}/projects`}>&larr; 返回项目列表</a>
+		</div>
+	</article>
+</BaseLayout>
+
+<style>
+	.project-article {
+		max-width: 720px;
+		margin: 0 auto;
+	}
+
+	header {
+		margin-bottom: 3rem;
+		text-align: center;
+		padding-bottom: 2rem;
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	h1 {
+		font-size: 2.5rem;
+		margin-bottom: 1rem;
+	}
+
+	.description {
+		font-size: 1.2rem;
+		opacity: 0.9;
+		margin-bottom: 1rem;
+	}
+
+	.meta {
+		color: var(--color-primary);
+		opacity: 0.7;
+		margin-bottom: 1.5rem;
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+	}
+
+	.project-link {
+		display: inline-block;
+		padding: 0.75rem 1.5rem;
+		background-color: var(--color-primary);
+		color: var(--color-bg);
+		text-decoration: none;
+		border-radius: 4px;
+		font-weight: bold;
+		transition: transform 0.2s;
+	}
+
+	.project-link:hover {
+		transform: translateY(-2px);
+	}
+
+	.content {
+		line-height: 1.8;
+		font-size: 1.1rem;
+		margin-bottom: 3rem;
+	}
+
+	.content :global(h2) { margin-top: 2.5rem; }
+	.content :global(p) { margin-bottom: 1.5rem; }
+	.content :global(ul) { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+	.content :global(li) { margin-bottom: 0.5rem; }
+
+	.back {
+		border-top: 1px solid var(--color-border);
+		padding-top: 2rem;
+	}
+</style>

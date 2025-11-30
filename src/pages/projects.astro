@@ -1,25 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { useTranslations } from '../i18n/utils';
+import { getCollection } from 'astro:content';
 
 const lang = 'en';
 const t = useTranslations(lang);
 
-const projects = [
-	{
-		title: "Personal Website",
-		description: "This website! Built with Astro and Vanilla CSS.",
-		link: "#",
-		tags: ["Astro", "CSS", "SSG"]
-	},
-	{
-		title: "Barcode Wallet App",
-		description: "An iOS app to manage gym passes and barcodes.",
-		link: "#",
-		tags: ["iOS", "Swift", "SwiftUI"]
-	},
-	// Add more projects here
-];
+const projects = (await getCollection('projects', ({ id }) => id.startsWith('en/')))
+	.sort((a, b) => (b.data.pubDate?.valueOf() || 0) - (a.data.pubDate?.valueOf() || 0));
 ---
 
 <BaseLayout title="Projects | ZhouHD" description="Showcase of my personal and professional projects.">
@@ -31,12 +19,52 @@ const projects = [
 		<div class="projects-grid">
 			{projects.map((project) => (
 				<article class="project-card">
-					<h2>{project.title}</h2>
-					<p>{project.description}</p>
+					<h2>{project.data.title}</h2>
+					<p>{project.data.description}</p>
 					<div class="tags">
-						{project.tags.map(tag => <span class="tag">{tag}</span>)}
+						{project.data.tags && project.data.tags.map(tag => <span class="tag">{tag}</span>)}
 					</div>
-					<a href={project.link} class="link">View Project &rarr;</a>
+					{project.data.link && <a href={project.data.link} class="link">View Project &rarr;</a>}
+					{/* If it's an internal article (like Personal Website), we might want to link to the article page instead? 
+					    For now, the user asked for an article about the website. 
+					    The 'link' in frontmatter points to external or repo. 
+					    But we also have the content body. 
+					    Should we link to a detail page? 
+					    The user said "create a article about the Personal Website". 
+					    So we probably need a detail page `projects/[...slug].astro`.
+					    But the current plan didn't explicitly mention creating a detail page, just "Create 'Personal Website' article".
+					    If I put it in `src/content/projects`, I should probably render it.
+					    However, `projects.astro` currently just lists them.
+					    If I want to show the article, I need a dynamic route for projects too.
+					    The user said: "I want you to create a article about the Personal Website".
+					    If I just put it in the collection but don't have a page to show it, it's useless.
+					    So I should create `src/pages/projects/[...slug].astro` and `src/pages/[lang]/projects/[...slug].astro`.
+					    
+					    Let's first fix the list view.
+					    For the "Personal Website", the `link` I put in frontmatter is the GitHub repo.
+					    But the user wants an *article*.
+					    So I should probably link to the internal article page if it exists.
+					    
+					    Let's add a check. If it has a body, maybe link to internal?
+					    Or just always link to internal if it's in the collection?
+					    The "Barcode Wallet" also has a body (brief).
+					    
+					    Let's assume we will create a detail page.
+					    So the link should be `/projects/${project.slug}`.
+					    But wait, `link` in frontmatter is for external links (like "View Project").
+					    Maybe we need both? "Read Article" and "Visit Site"?
+					    
+					    For now, let's update the list to show what we have.
+					    I'll update the link to point to the detail page if we decide to make one.
+					    The user asked for an article. So yes, I need a detail page.
+					    
+					    I'll update the rendering to link to `/projects/${slug}` for the title or a "Read More" button.
+					    And keep the external link if provided.
+					*/ }
+					<div class="links">
+						<a href={`/projects/${project.slug.split('/').slice(1).join('/')}`} class="link">Read Article &rarr;</a>
+						{project.data.link && <a href={project.data.link} class="link external" target="_blank" rel="noopener noreferrer">Visit Site &rarr;</a>}
+					</div>
 				</article>
 			))}
 		</div>
