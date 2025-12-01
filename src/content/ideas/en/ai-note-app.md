@@ -1,7 +1,7 @@
 ---
 title: "Concept: An AI Note App that Thinks with You"
 description: "A proposal for a note-taking tool that uses AI to cluster, summarize, and surface relevant thoughts in real-time."
-pubDate: 2025-11-30
+pubDate: 2025-11-30T16:00:00
 tags: ["app-idea", "ai", "productivity", "product-design"]
 ---
 

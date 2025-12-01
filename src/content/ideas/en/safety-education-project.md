@@ -1,7 +1,7 @@
 ---
 title: "Project Idea: Free Safety Education for the Next Generation"
 description: "A vision for a comprehensive, age-appropriate, and open-source safety education platform for young people."
-pubDate: 2025-11-30
+pubDate: 2025-11-30T12:00:00
 tags: ["education", "safety", "non-profit", "vision"]
 ---
 
