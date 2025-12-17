@@ -1,0 +1,1 @@
+Graph 世界模型: 可以利用我在 Graph Database 的知识建立世界模型，辅助金融决策？关键词：预测未来，Graph RAG
